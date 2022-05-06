@@ -21,7 +21,19 @@ async function run() {
   try {
     await client.connect();
     const productCollection = client.db("laptopdokan").collection("laptops");
-    console.log("Connected");
+    console.log("Connected");    
+    app.get("/productssix", async (req, res) => {
+      console.log("query", req.query);
+      const query = {};
+      const cursor = productCollection.find(query);
+      
+      let products;
+        products = await cursor.toArray();
+        products =products.slice(0,6)
+      res.send(products);
+      // console.log(products)
+    });
+
     app.get("/products", async (req, res) => {
       console.log("query", req.query);
       const query = {};
@@ -38,25 +50,27 @@ async function run() {
       const count = await productCollection.countDocuments();
       res.json({ count });
     });
-
+// add products
     app.post("/service", async (req, res) => {
       const newService = req.body;
       const result = await  productCollection.insertOne(newService);
       res.send(result);
     });
+    // delete products
     app.delete("/service/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: ObjectId(id) };
       const result = await productCollection.deleteOne(query);
       res.send(result);
     });
-
+// search by id
     app.get('/products/:id',async(req,res)=>{
       const id=req.params.id
       const query={_id: ObjectId(id)}
       const result=await productCollection.findOne(query)
       res.send(result)
     })
+    // deliver + add to stock
     app.put('/products/:id',async(req,res)=>{
       const id=req.params.id
       const updatedProduct=req.body

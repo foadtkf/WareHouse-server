@@ -43,6 +43,21 @@ async function run() {
       res.send(products);
       // console.log(products)
     });
+    
+
+    app.get("/my", async (req, res) => {
+      console.log("query", req.query);
+      const email = req.query.email;
+      const query = {email:email};
+      console.log("email" , email)
+      console.log("query:" ,query)
+      const cursor = productCollection.find(query);
+      let products;
+        products = await cursor.toArray();
+      res.send(products);
+      // console.log(products)
+    });
+    
 
     app.get("/productcount", async (req, res) => {
       const query = {};
